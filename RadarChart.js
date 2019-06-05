@@ -4,8 +4,8 @@ var RadarChart = {
 	 radius: 5,
 	 w: 600,
 	 h: 600,
-	 factor: 1.3,
-	 factorLegend: .95,
+	 factor: 1,
+	 factorLegend: .90,
 	 levels: 3,
 	 maxValue: 0,
 	 radians: 2 * Math.PI,
@@ -100,7 +100,7 @@ var RadarChart = {
 		.attr("class", "legend")
 		.text(function(d){return d})
 		.style("font-family", "Trebuchet MS")
-		.style("font-size", "15px")
+		.style("font-size", "14px")
 		.style("font-weight", "normal")
 		.style("fill",function(d){
 			

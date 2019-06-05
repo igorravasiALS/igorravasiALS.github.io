@@ -7,7 +7,7 @@ var RadarChart = {
 	 w: 600,
 	 h: 600,
 	 factor: 1,
-	 factorLegend: 0.95,
+	 factorLegend: 0.90,
 	 levels: 3,
 	 maxValue: 0,
 	 radians: 2 * Math.PI,
@@ -130,7 +130,7 @@ var RadarChart = {
 		.attr("x", function(d, i){return cfg.w/2*(1-cfg.factorLegend*Math.sin(i*cfg.radians/total))-60*Math.sin(i*cfg.radians/total);})
 		.attr("y", function(d, i){return cfg.h/2*(1-Math.cos(i*cfg.radians/total))-20*Math.cos(i*cfg.radians/total);})
 		.on('click', function(d) {
-			//alert("CIAOOOO"); 
+			//alert("ciao"); 
 			//sessionStorage.setItem("train", d);
 			//getCurrentViz().getWorkbook().activateSheetAsync("Livello 3");
 				var ws = tableau.extensions.dashboardContent.dashboard.worksheets[6];
