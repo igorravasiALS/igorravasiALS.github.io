@@ -11,9 +11,9 @@
 		  //var worksheet = tableau.extensions.dashboardContent.dashboard.worksheets[0];
 		  //var worksheet1 = tableau.extensions.dashboardContent.dashboard.worksheets[6];
 		  //var worksheet2 = tableau.extensions.dashboardContent.dashboard.worksheets[2];
-		  var worksheet = tableau.extensions.dashboardContent.dashboard.worksheets.find(w => w.name === "LEV1_bar_EMU");
-		  var worksheet1 = tableau.extensions.dashboardContent.dashboard.worksheets.find(w => w.name === "LEV1_bar_DMU");
-		  var worksheet2 = tableau.extensions.dashboardContent.dashboard.worksheets[2];
+		  var worksheet = tableau.extensions.dashboardContent.dashboard.worksheets.find(w => w.name === "LEV1_bar");
+		  //var worksheet1 = tableau.extensions.dashboardContent.dashboard.worksheets.find(w => w.name === "LEV1_bar_DMU");
+		  //var worksheet2 = tableau.extensions.dashboardContent.dashboard.worksheets[2];
 		  var i, LegendOptions, colordata, row, color, d;
 		  
 		
@@ -168,7 +168,7 @@
 
 		  // deselezionano eventuali barre selezionate durante la navigazione
 		  worksheet.selectMarksByValueAsync([{fieldName: 'Flotta', value: ''}], 'select-replace');
-		  worksheet1.selectMarksByValueAsync([{fieldName: 'Flotta', value: ''}], 'select-replace');
+		  //worksheet1.selectMarksByValueAsync([{fieldName: 'Flotta', value: ''}], 'select-replace');
 		  
 		  // disegna entrambi i radar
 		  output_all();
@@ -181,12 +181,12 @@
 			});
 		  });
 		  
-		  worksheet2.addEventListener(tableau.TableauEventType.MarkSelectionChanged, output_all);
-		  worksheet1.addEventListener(tableau.TableauEventType.MarkSelectionChanged, output_all);
+		  //worksheet2.addEventListener(tableau.TableauEventType.MarkSelectionChanged, output_all);
+		  //worksheet1.addEventListener(tableau.TableauEventType.MarkSelectionChanged, output_all);
 		  worksheet.addEventListener(tableau.TableauEventType.MarkSelectionChanged, output_all);
 		  
-		  tableau.extensions.dashboardContent.dashboard.worksheets.find(w => w.name === "SelezioneDeposito").addEventListener(tableau.TableauEventType.MarkSelectionChanged, output_all);
-		  tableau.extensions.dashboardContent.dashboard.worksheets.find(w => w.name === "SelezioneDeposito").addEventListener(tableau.TableauEventType.FilterChanged, output_all);
+		  //tableau.extensions.dashboardContent.dashboard.worksheets.find(w => w.name === "SelezioneDeposito").addEventListener(tableau.TableauEventType.MarkSelectionChanged, output_all);
+		  //tableau.extensions.dashboardContent.dashboard.worksheets.find(w => w.name === "SelezioneDeposito").addEventListener(tableau.TableauEventType.FilterChanged, output_all);
 		  
           
 		  // schedula il refresh del datasource e l'aggiornamento dei radar ogni 2 minuti
