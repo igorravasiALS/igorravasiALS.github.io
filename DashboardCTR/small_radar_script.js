@@ -106,7 +106,7 @@
 			  colordata = c;
 			  LegendOptions=b;
 			  var w = 250,h = 250;
-			  var colorscale = d3.scale.ordinal().range(["#a8a8a8", "#1b3f95"]);  
+			  var colorscale = d3.scale.ordinal().range(["#a8a8a8", "#253F75"]);  
 			  
 			  var mycfg = {
 				  w: w,
@@ -122,7 +122,7 @@
 				  ToRight: 0,
 				  TranslateX: 80,
 				  TranslateY: 30,
-				  color: d3.scale.ordinal().range(["#a8a8a8", "#1b3f95"]),
+				  color: d3.scale.ordinal().range(["#a8a8a8", "#253F75"]),
 				  colordata: colordata
 				  }
 				  
