@@ -131,14 +131,14 @@
 		  
 		  // funzione che estrae i dati dal grafico a barre AGV e disegna il radar corrispondente
 		  function output(){
-			  
 			    worksheet.getSummaryDataAsync().then(function (sumdata) {
 				LegendOptions = getLegend(sumdata.data);
 				colordata = getColor(sumdata.data);
 				d = getBestData(sumdata.data);
+				d3.select("#chart").select("svg").remove();
 				drawRadar(d, LegendOptions, colordata, "#chart");
 				});
-			  
+				
 		  }
 
 		  // funzione che estrae i dati dal grafico a barre EVO e disegna il radar corrispondente
@@ -148,6 +148,7 @@
 				LegendOptions = getLegend(sumdata.data);
 				colordata = getColor(sumdata.data);
 				d = getBestData(sumdata.data);
+				d3.select("#chart1").select("svg").remove();
 				drawRadar(d, LegendOptions, colordata, "#chart1");
 				});
 			  
