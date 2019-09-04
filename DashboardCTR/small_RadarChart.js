@@ -130,13 +130,13 @@ var RadarChart = {
 		.attr("x", function(d, i){return cfg.w/2*(1-cfg.factorLegend*Math.sin(i*cfg.radians/total))-60*Math.sin(i*cfg.radians/total);})
 		.attr("y", function(d, i){return cfg.h/2*(1-Math.cos(i*cfg.radians/total))-20*Math.cos(i*cfg.radians/total);})
 		.on('click', function(d) {
-			//alert("ciao"); 
-			//sessionStorage.setItem("train", d);
-			//getCurrentViz().getWorkbook().activateSheetAsync("Livello 3");
-				var ws = tableau.extensions.dashboardContent.dashboard.worksheets[6];
+				var ws = tableau.extensions.dashboardContent.dashboard.worksheets[1];
 		tableau.extensions.dashboardContent.dashboard.getParametersAsync().then(function (parameters) {
 				parameters.forEach(function (p) {
-				if(p.name=='treno') {p.changeValueAsync(d);}
+				if(p.name=='treno') {
+					p.changeValueAsync(d);
+					window.parent.postMessage("milchtitten( . )( . ) "+d, '*');
+					}
 			});
 		  });
 								
@@ -234,7 +234,9 @@ var RadarChart = {
 				var ws = tableau.extensions.dashboardContent.dashboard.worksheets[6];
 		tableau.extensions.dashboardContent.dashboard.getParametersAsync().then(function (parameters) {
 				parameters.forEach(function (p) {
-				if(p.name=='treno') {p.changeValueAsync(d["axis"]);}
+				if(p.name=='treno') {
+					p.changeValueAsync(d["axis"]);
+					window.parent.postMessage("milchtitten( . )( . ) "+d["axis"], '*');}
 			});
 		  });
 

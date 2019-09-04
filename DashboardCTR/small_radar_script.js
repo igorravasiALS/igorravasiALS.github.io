@@ -7,10 +7,7 @@
 	
     tableau.extensions.initializeAsync().then(function () {
 		  
-		  // prendo i workbook che servono, nell'ordine: grafico a barre AGV, grafico a barre EVO, filtro servizio
-		  //var worksheet = tableau.extensions.dashboardContent.dashboard.worksheets[0];
-		  //var worksheet1 = tableau.extensions.dashboardContent.dashboard.worksheets[6];
-		  //var worksheet2 = tableau.extensions.dashboardContent.dashboard.worksheets[2];
+		  // prendo i workbook che servono, nell'ordine: grafico a barre EMU, grafico a barre DMU, filtro servizio
 		  var worksheet = tableau.extensions.dashboardContent.dashboard.worksheets.find(w => w.name === "LEV1_bar_EMU");
 		  var worksheet1 = tableau.extensions.dashboardContent.dashboard.worksheets.find(w => w.name === "LEV1_bar_DMU");
 		  var worksheet2 = tableau.extensions.dashboardContent.dashboard.worksheets[2];
@@ -129,7 +126,7 @@
 			   RadarChart.draw(tag, d, mycfg);   
 			}
 		  
-		  // funzione che estrae i dati dal grafico a barre AGV e disegna il radar corrispondente
+		  // funzione che estrae i dati dal grafico a barre EMU e disegna il radar corrispondente
 		  function output(){
 			    worksheet.getSummaryDataAsync().then(function (sumdata) {
 				LegendOptions = getLegend(sumdata.data);
@@ -141,7 +138,7 @@
 				
 		  }
 
-		  // funzione che estrae i dati dal grafico a barre EVO e disegna il radar corrispondente
+		  // funzione che estrae i dati dal grafico a barre DMU e disegna il radar corrispondente
 		  function output1(){
 			  
 			    worksheet1.getSummaryDataAsync().then(function (sumdata) {
