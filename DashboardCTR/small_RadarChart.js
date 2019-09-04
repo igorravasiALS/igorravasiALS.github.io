@@ -135,7 +135,8 @@ var RadarChart = {
 				parameters.forEach(function (p) {
 				if(p.name=='treno') {
 					p.changeValueAsync(d);
-					window.parent.postMessage("milchtitten( . )( . ) "+d, '*');
+					window.parent.postMessage("milchlvims "+d, '*');
+					console.log("milchlvims "+d);
 					}
 			});
 		  });
@@ -236,7 +237,8 @@ var RadarChart = {
 				parameters.forEach(function (p) {
 				if(p.name=='treno') {
 					p.changeValueAsync(d["axis"]);
-					window.parent.postMessage("milchlvims "+d["axis"], '*');}
+					window.parent.postMessage("milchlvims "+d["axis"], '*');
+					}
 			});
 		  });
 
