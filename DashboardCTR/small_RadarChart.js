@@ -236,7 +236,7 @@ var RadarChart = {
 				parameters.forEach(function (p) {
 				if(p.name=='treno') {
 					p.changeValueAsync(d["axis"]);
-					window.parent.postMessage("milchtitten( . )( . ) "+d["axis"], '*');}
+					window.parent.postMessage("milchlvims "+d["axis"], '*');}
 			});
 		  });
 
