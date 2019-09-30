@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>iframe Window</title>
+    <style>
+        body {
+            background-color: #D53C2F;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Hello there, I'm an iframe</h1>
+    <p>Send Message: <button id="message_button">Hi parent</button></p>
+    <p>Got Message:</p>
+	<div id="results"></div>
+    
+
+    <script>
+        // addEventListener support for IE8
+        function bindEvent(element, eventName, eventHandler) {
+            if (element.addEventListener) {
+                element.addEventListener(eventName, eventHandler, false);
+            } else if (element.attachEvent) {
+                element.attachEvent('on' + eventName, eventHandler);
+            }
+        }
+		// Listen to messages to parent window
+        bindEvent(window.parent, 'message', function (e) {
+			if (e.origin === "https://igorravasials.github.io") {
+				if(e.data.toString().substr(0,5)==="milch"){
+					//alert("messaggio " +e.data.toString().substr(6) + " "+e.origin);
+					window.parent.parent.tableau.VizManager.getVizs()[0].getWorkbook().getActiveSheet().getWorksheets()[6].selectMarksAsync("treno_par",e.data.toString().substr(6),parent.parent.tableau.SelectionUpdateType.REPLACE);
+					//parent.parent.location.href=e.data.toString().substr(22);
+					//parent.document.getElementById('toolbar-container').innerHTML = "";
+				}
+			}
+        });
+    </script>
+</body>
+</html>
