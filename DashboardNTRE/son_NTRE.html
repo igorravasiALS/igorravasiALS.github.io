@@ -33,7 +33,7 @@
 			var tableau_server="https://igorravasials.github.io";
 			var tableau_local="http://localhost:8080";
 			var mess_prefix="milch";
-			if (e.origin === tableau_local) {
+			if (e.origin === tableau_server) {
 				if(e.data.toString().substr(0,5)===mess_prefix){
 					//alert("messaggio " +e.data.toString().substr(6) + " "+e.origin);
 					var treno_num=e.data.toString().substr(6);
