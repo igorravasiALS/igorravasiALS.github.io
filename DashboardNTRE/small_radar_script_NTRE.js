@@ -32,7 +32,7 @@
 			for(i in data){
 				if(data[i][2].formattedValue=="Disp. corrente"){
 					row.push({
-					axis: data[i][3].value,
+					axis: data[i][3].value.substr(3),
 					value: data[i][0].value
 					})
 				}
@@ -113,7 +113,7 @@
 				  ExtraWidthY: 100,
 				  radius: 5,
 				  factor: 1,
-			      factorLegend: 0.90,
+			      factorLegend: 0.9,
 				  radians: 2 * Math.PI,
 				  ToRight: 0,
 				  TranslateX: 80,

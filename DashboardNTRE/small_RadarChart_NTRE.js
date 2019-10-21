@@ -7,7 +7,7 @@ var RadarChart = {
 	 w: 600,
 	 h: 600,
 	 factor: 1,
-	 factorLegend: 0.90,
+	 factorLegend: 0.9,
 	 levels: 3,
 	 maxValue: 0,
 	 radians: 2 * Math.PI,
