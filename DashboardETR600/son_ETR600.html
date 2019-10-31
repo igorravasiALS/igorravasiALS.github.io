@@ -38,8 +38,9 @@
 				if(e.data.toString().substr(0,5)===mess_prefix){
 				//console.log(e.data.toString().substr(0,5));
 					//alert("messaggio " +e.data.toString().substr(6) + " "+e.origin);
-					var treno=e.data.toString().substr(6);
-					//console.log(treno);
+					var treno_num=e.data.toString().substr(6);
+					var treno="ETR"+treno_num;
+					console.log(treno);
 					var worksheets = window.parent.parent.tableau.VizManager.getVizs()[0].getWorkbook().getActiveSheet().getWorksheets();
 
 					for(i=0;i<worksheets.length;i++){
@@ -58,7 +59,40 @@
 							var data_sheet = worksheets[i];
 						}
 					}
-					button_sheet.selectMarksAsync("treno_par",treno,parent.parent.tableau.SelectionUpdateType.REPLACE);
+					
+					options = {
+                    maxRows: 0, // Max rows to return. Use 0 to return all rows
+                    ignoreAliases: false,
+                    ignoreSelection: true
+                    };
+						
+					data_sheet.getSummaryDataAsync(options).then(function(t){
+                    columns = t.getColumns();
+                    // Find the position the desired field is in
+                    for(j=0;j<columns.length;j++){
+						if (columns[j].getFieldName()==="Area") {
+							var area_index = j;
+							console.log("Area: "+j);
+						} else if (columns[j].getFieldName()==="PlantIT") {
+							var depot_index = j;
+							console.log("Deposito: "+j);
+						} else if (columns[j].getFieldName()==="treno") {
+							var train_index = j;
+							console.log("treno: "+j);
+						}
+                    }
+                    data = t.getData();
+					for (i=0;i<data.length;i++) {
+						if (data[i][train_index].formattedValue==treno) {
+							var depot_value=data[i][depot_index].formattedValue;
+							break;
+						}
+					}
+					console.log("Deposito "+depot_value);
+					console.log("Treno "+treno);
+					button_sheet.selectMarksAsync({"treno_par":treno,"PlantIT":depot_value},parent.parent.tableau.SelectionUpdateType.REPLACE);
+				});
+					
 				//parent.parent.location.href=e.data.toString().substr(22);
 					//parent.document.getElementById('toolbar-container').innerHTML = "";
 				}
