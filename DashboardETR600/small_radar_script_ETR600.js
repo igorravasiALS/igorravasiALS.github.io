@@ -75,7 +75,7 @@
 						test = parseFloat(nicedata[i][c][6].value)
 						}
 				row.push({
-					axis: nicedata[i][c][3].value,
+					axis: nicedata[i][c][3].value.substr(3),
 					value: test
 				})
         

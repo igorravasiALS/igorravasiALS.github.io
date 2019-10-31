@@ -133,7 +133,7 @@ var RadarChart = {
 		    tableau.extensions.dashboardContent.dashboard.getParametersAsync().then(function (parameters) {
 				parameters.forEach(function (p) {
 				if(p.name=='treno') {
-					p.changeValueAsync(d);
+					p.changeValueAsync("ETR"+d);
 					window.parent.postMessage("milch "+d, '*');
 				}
 			});
@@ -234,7 +234,7 @@ var RadarChart = {
 				tableau.extensions.dashboardContent.dashboard.getParametersAsync().then(function (parameters) {
 				parameters.forEach(function (p) {
 				if(p.name=='treno') {
-					p.changeValueAsync(d["axis"]);
+					p.changeValueAsync("ETR"+d["axis"]);
 					window.parent.postMessage("milch "+d["axis"], '*');
 					}
 			});
