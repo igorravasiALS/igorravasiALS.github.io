@@ -32,7 +32,7 @@
 			for(i in data){
 				if(data[i][2].formattedValue=="Disp. corrente"){
 					row.push({
-					axis: data[i][3].value,
+					axis: data[i][3].value.substr(3),
 					value: data[i][0].value
 					})
 				}
