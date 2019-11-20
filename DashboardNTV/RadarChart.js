@@ -5,7 +5,7 @@ var RadarChart = {
 	 w: 600,
 	 h: 600,
 	 factor: 1,
-	 factorLegend: .85,
+	 factorLegend: .90,
 	 levels: 3,
 	 maxValue: 0,
 	 radians: 2 * Math.PI,
@@ -100,7 +100,7 @@ var RadarChart = {
 		.attr("class", "legend")
 		.text(function(d){return d})
 		.style("font-family", "Trebuchet MS")
-		.style("font-size", "15px")
+		.style("font-size", "14px")
 		.style("font-weight", "normal")
 		.style("fill",function(d){
 			
@@ -134,7 +134,10 @@ var RadarChart = {
 				var ws = tableau.extensions.dashboardContent.dashboard.worksheets[6];
 		tableau.extensions.dashboardContent.dashboard.getParametersAsync().then(function (parameters) {
 				parameters.forEach(function (p) {
-				if(p.name=='treno') {p.changeValueAsync(d);}
+				if(p.name=='treno') {
+					p.changeValueAsync(d);
+					window.parent.postMessage("milch "+d, '*');
+				}
 			});
 		  });			
 				  });
@@ -233,7 +236,10 @@ var RadarChart = {
 				var ws = tableau.extensions.dashboardContent.dashboard.worksheets[6];
 		tableau.extensions.dashboardContent.dashboard.getParametersAsync().then(function (parameters) {
 				parameters.forEach(function (p) {
-				if(p.name=='treno') {p.changeValueAsync(d["axis"]);}
+				if(p.name=='treno') {
+					p.changeValueAsync(d["axis"]);
+					window.parent.postMessage("milch "+d["axis"], '*');
+				}
 			});
 		  });			
 				  })
