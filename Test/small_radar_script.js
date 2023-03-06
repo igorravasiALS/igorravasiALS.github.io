@@ -6,15 +6,15 @@
     tableau.extensions.initializeAsync().then(function () {
 		  
 		  // prendo i workbook che servono, nell'ordine: grafico a barre AGV, grafico a barre EVO, filtro servizio
-		  var worksheet = tableau.extensions.dashboardContent.dashboard.worksheets[1];
-		  var worksheet1 = tableau.extensions.dashboardContent.dashboard.worksheets[2];
-		  var worksheet2 = tableau.extensions.dashboardContent.dashboard.worksheets[3];
+		  var worksheet = tableau.extensions.dashboardContent.dashboard.worksheets[0];
+		  var worksheet1 = tableau.extensions.dashboardContent.dashboard.worksheets[1];
+		  var worksheet2 = tableau.extensions.dashboardContent.dashboard.worksheets[2];
 		  var i, LegendOptions, colordata, row, color, d;
 		  
 		  // funzione per estrarre un array contenente le dimensioni per i poligoni
 		  function getLegend(data){
 			var legend = [];
-			for(i in data) legend[i]=data[i][2].formattedValue;
+			for(i in data) legend[i]=data[i][3].formattedValue;
 	
 					function onlyUnique(value, index, self) { 
 						return self.indexOf(value) === index;
@@ -27,10 +27,10 @@
 		  function getColor(data){
 			row = [];
 			for(i in data){
-				if(data[i][2].formattedValue=="Disp. corrente"){
+				if(data[i][3].formattedValue=="Disp. corrente"){
 					row.push({
-					axis: data[i][3].value,
-					value: data[i][0].value
+					axis: data[i][0].value,
+					value: data[i][1].value
 					})
 				}
 			}
@@ -72,7 +72,7 @@
 						test = parseFloat(nicedata[i][c][6].value)
 						}
 				row.push({
-					axis: nicedata[i][c][3].value,
+					axis: nicedata[i][c][0].value,
 					value: test
 				})
         
