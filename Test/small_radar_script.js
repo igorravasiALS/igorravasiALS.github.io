@@ -49,7 +49,7 @@
 			var nicedata = [];
 
 			function myfilt(row){
-				return row[2].formattedValue == dim;
+				return row[3].formattedValue == dim;
 				}
 
 			for(i=0; i< LegendOptions.length;i++){
