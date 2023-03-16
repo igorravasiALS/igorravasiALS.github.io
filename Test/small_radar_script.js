@@ -27,12 +27,12 @@
 		  function getColor(data){
 			row = [];
 			for(i in data){
-				if(data[i][3].formattedValue=="Disp. corrente"){
+				
 					row.push({
 					axis: data[i][0].value,
 					value: data[i][1].value
 					})
-				}
+				
 			}
 			function sortFunc(a, b) {
 				if (a.axis > b.axis)  return -1;
