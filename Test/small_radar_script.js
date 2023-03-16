@@ -64,16 +64,14 @@
 				row = [];
 				for(c in nicedata[i]){
         
-					if(nicedata[i][c][6].value == '%null%') {
-			
-						test = parseFloat(nicedata[i][c][5].value)
-					
-					} else {
-						test = parseFloat(nicedata[i][c][6].value)
-						}
 				row.push({
 					axis: nicedata[i][c][0].value,
-					value: test
+					value: parseFloat(nicedata[i][c][5].value)
+				})
+					
+				row.push({
+					axis: nicedata[i][c][0].value,
+					value: parseFloat(nicedata[i][c][6].value)
 				})
         
 				bestdata[i]=row;		
