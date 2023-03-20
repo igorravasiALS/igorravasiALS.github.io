@@ -228,7 +228,7 @@ var RadarChart = {
 				  })
 		.on('click', function(d) {
 			
-				var ws = tableau.extensions.dashboardContent.dashboard.worksheets[6];
+				var ws = tableau.extensions.dashboardContent.dashboard.worksheets[8];
 		tableau.extensions.dashboardContent.dashboard.getParametersAsync().then(function (parameters) {
 				parameters.forEach(function (p) {
 				if(p.name=='treno') {p.changeValueAsync(d["axis"]);}
