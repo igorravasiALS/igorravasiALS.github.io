@@ -81,6 +81,18 @@
 				bestdata[i]=row;		
 				}
 			}
+			  
+			function sortFunc(a, b) {
+				if (a.axis > b.axis)  return -1;
+				else return 1;
+			}
+	
+			for(i in bestdata){
+				bestdata[i]=bestdata[i].sort(sortFunc);
+			}
+			
+			return bestdata;
+			}
 
 		  // funzione che disegna il radar, qui si possono cambiare alcuni parametri come larghezza e altezza
 		  function drawRadar(a, b, c, tag){
@@ -185,4 +197,3 @@
   });
 
 })();
-
