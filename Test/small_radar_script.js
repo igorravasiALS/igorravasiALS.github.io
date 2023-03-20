@@ -1,3 +1,5 @@
+//Codice per creare i dati da passare a RadarChart
+
 'use strict';
 
 (function () {
@@ -27,7 +29,7 @@
 		  function getColor(data){
 			row = [];
 			for(i in data){
-				if(data[i][2].formattedValue=="Disp. corrente"){
+				if(data[i][3].formattedValue=="Disp. corrente"){
 					row.push({
 					axis: data[i][0].value,
 					value: data[i][1].value
@@ -49,7 +51,7 @@
 			var nicedata = [];
 
 			function myfilt(row){
-				return row[2].formattedValue == dim;
+				return row[3].formattedValue == dim;
 				}
 
 			for(i=0; i< LegendOptions.length;i++){
@@ -72,7 +74,7 @@
 						test = parseFloat(nicedata[i][c][6].value)
 						}
 				row.push({
-					axis: nicedata[i][c][3].value,
+					axis: nicedata[i][c][0].value,
 					value: test
 				})
         
