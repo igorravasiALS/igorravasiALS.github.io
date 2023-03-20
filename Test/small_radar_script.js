@@ -27,12 +27,12 @@
 		  function getColor(data){
 			row = [];
 			for(i in data){
-				
+				if(data[i][2].formattedValue=="Disp. corrente"){
 					row.push({
 					axis: data[i][0].value,
 					value: data[i][1].value
 					})
-				
+				}
 			}
 			function sortFunc(a, b) {
 				if (a.axis > b.axis)  return -1;
@@ -49,7 +49,7 @@
 			var nicedata = [];
 
 			function myfilt(row){
-				return row[3].formattedValue == dim;
+				return row[2].formattedValue == dim;
 				}
 
 			for(i=0; i< LegendOptions.length;i++){
@@ -64,30 +64,20 @@
 				row = [];
 				for(c in nicedata[i]){
         
-				row.push({
-					axis: nicedata[i][c][0].value,
-					value: parseFloat(nicedata[i][c][5].value)
-				})
+					if(nicedata[i][c][6].value == '%null%') {
+			
+						test = parseFloat(nicedata[i][c][5].value)
 					
+					} else {
+						test = parseFloat(nicedata[i][c][6].value)
+						}
 				row.push({
-					axis: nicedata[i][c][0].value,
-					value: parseFloat(nicedata[i][c][6].value)
+					axis: nicedata[i][c][3].value,
+					value: test
 				})
         
 				bestdata[i]=row;		
 				}
-			}
-
-			function sortFunc(a, b) {
-				if (a.axis > b.axis)  return -1;
-				else return 1;
-			}
-	
-			for(i in bestdata){
-				bestdata[i]=bestdata[i].sort(sortFunc);
-			}
-			
-			return bestdata;
 			}
 
 		  // funzione che disegna il radar, qui si possono cambiare alcuni parametri come larghezza e altezza
