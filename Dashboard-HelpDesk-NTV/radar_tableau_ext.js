@@ -13,10 +13,11 @@
 			var ws_agv_bar = wss[ws_agv_bar_id];
 			var ws_evo_bar = wss[ws_evo_bar_id];
 			
-			//TODO: Replace with id search by sheet name    
-			/*var ws_agv_bar = wss.find(function (sheet) {
-				return sheet.name === "AGV_NAME_OF_SHEET";
-			});*/
+			const searchParams = new URLSearchParams(window.location.search);
+			var ws_agv_bar = wss.find(function (sheet) {
+				return sheet.name === searchParams.get('bar-sheet-name');
+				//LEV1_bar
+			});
 			
 			var i, row;
 			
@@ -157,8 +158,7 @@
 		
 			// funzione che disegna tutti i radar
 			function drawEveryRadar(){
-				drawARadar(ws_agv_bar, "#chart-left");
-				drawARadar(ws_evo_bar, "#chart-right");
+				drawARadar(ws_agv_bar, "#the-radar");
 			}
 			
 			
