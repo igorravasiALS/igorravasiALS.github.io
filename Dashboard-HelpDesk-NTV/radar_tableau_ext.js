@@ -8,16 +8,17 @@
 			
 			const ws_agv_bar_id = 0;
 			const ws_evo_bar_id = 1;
+			var commute = 0;
 			const ds_datamapping_name = "datamapping";
 			var wss = tableau.extensions.dashboardContent.dashboard.worksheets;
 			var ws_agv_bar = wss[ws_agv_bar_id];
 			var ws_evo_bar = wss[ws_evo_bar_id];
 			
 			const searchParams = new URLSearchParams(window.location.search);
-			var ws_agv_bar = wss.find(function (sheet) {
+			/*var ws_agv_bar = wss.find(function (sheet) {
 				return sheet.name === searchParams.get('bar-sheet-name');
 				//LEV1_bar
-			});
+			});*/
 			
 			var i, row;
 			
@@ -25,12 +26,12 @@
 			var legend_options, color_data, row, color, d;
 
 			function configure() { 
-				// ... code to configure the extension
-				// for example, set up and call displayDialogAsync() to create the configuration window 
-				// and set initial settings (defaultIntervalInMin)
-				// and handle the return payload 
-				// ...
 				console.log("Premuto configura");
+				if(commute==1)
+					commute=0;
+				else
+					commute = 1;
+				ws_agv_bar = wss[commute];
 				//tableau.extensions.ui.displayDialogAsync(popupUrl, defaultIntervalInMin, { height: 500, width: 500 }).then((closePayload) => {
 				// The promise is resolved when the dialog has been expectedly closed, meaning that
 				// the popup extension has called tableau.extensions.ui.closeDialog.
@@ -39,10 +40,10 @@
 				// The close payload is returned from the popup extension via the closeDialog() method.
 				// ....
 
-				}).catch((error) => {
+				//}).catch((error) => {
 					//  ... 
 					// ... code for error handling
-				});
+				//});
 			}
 
 
