@@ -28,16 +28,16 @@
 			function configure() { 
 				var commute;
 				console.log("Premuto configura");
-				if(commute==1)
+				if(commute==1){
 					commute=0;
-				else
+				} else {
 					commute = 1;
+				}
 				ws_agv_bar = wss[commute];
 				//tableau.extensions.ui.displayDialogAsync(popupUrl, defaultIntervalInMin, { height: 500, width: 500 }).then((closePayload) => {
 				// The promise is resolved when the dialog has been expectedly closed, meaning that
 				// the popup extension has called tableau.extensions.ui.closeDialog.
 				// ...
-
 				// The close payload is returned from the popup extension via the closeDialog() method.
 				// ....
 
