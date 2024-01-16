@@ -4,7 +4,7 @@
 (function () {
 	$(document).ready(function () {
 	
-		tableau.extensions.initializeAsync().then(function () {
+		tableau.extensions.initializeAsync({'configure': configure}).then(function () {
 			
 			const ws_agv_bar_id = 0;
 			const ws_evo_bar_id = 1;
