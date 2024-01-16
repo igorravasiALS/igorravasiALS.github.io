@@ -26,6 +26,7 @@
 			var legend_options, color_data, row, color, d;
 
 			function configure() { 
+				var commute;
 				console.log("Premuto configura");
 				if(commute==1)
 					commute=0;
