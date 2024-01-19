@@ -3,50 +3,50 @@
 
 (function () {
 	$(document).ready(function () {
+
+		function configure() { 
+			const popupUrl = `${window.location.origin}/Dashboard-HelpDesk-NTV/settings_dialog.html`;
+			tableau.extensions.ui.displayDialogAsync(popupUrl, 0, { height: 500, width: 500 }).then((closePayload) => {
+			// The promise is resolved when the dialog has been expectedly closed, meaning that
+			// the popup extension has called tableau.extensions.ui.closeDialog.
+			// ...
+			// The close payload is returned from the popup extension via the closeDialog() method.
+			// ....
+				console.log("Payload: " + closePayload);
+			}).catch((error) => {
+				//  ... 
+				// ... code for error handling
+				console.log("Error on dialog");
+			});
+		}
+		
+		
+		function updateExtensionBasedOnSettings (settings) {
+			if (settings.selectedDatasources) {
+				activeDatasourceIdList = JSON.parse(settings.selectedDatasources);
+				console.log("numero di ds: " + activeDatasourceIdList.length);	
+			}
+		}
 	
 		tableau.extensions.initializeAsync({'configure': configure}).then(function () {
 			
 			const ws_agv_bar_id = 0;
 			const ws_evo_bar_id = 1;
-			var commute = 0;
+			
 			const ds_datamapping_name = "datamapping";
 			var wss = tableau.extensions.dashboardContent.dashboard.worksheets;
 			var ws_agv_bar = wss[ws_agv_bar_id];
 			var ws_evo_bar = wss[ws_evo_bar_id];
 			
 			const searchParams = new URLSearchParams(window.location.search);
-			/*var ws_agv_bar = wss.find(function (sheet) {
-				return sheet.name === searchParams.get('bar-sheet-name');
-				//LEV1_bar
-			});*/
+			var ws_agv_bar = wss.find(function (sheet) {
+				return sheet.name === "LEV1_bar";
+			});
 			
 			var i, row;
 			
 			/*TODO: Check if it's possible to remove these declarations */
 			var legend_options, color_data, row, color, d;
-
-			function configure() { 
-				var commute;
-				console.log("Premuto configura");
-				if(commute==1){
-					commute=0;
-				} else {
-					commute = 1;
-				}
-				ws_agv_bar = wss[commute];
-				//tableau.extensions.ui.displayDialogAsync(popupUrl, defaultIntervalInMin, { height: 500, width: 500 }).then((closePayload) => {
-				// The promise is resolved when the dialog has been expectedly closed, meaning that
-				// the popup extension has called tableau.extensions.ui.closeDialog.
-				// ...
-				// The close payload is returned from the popup extension via the closeDialog() method.
-				// ....
-
-				//}).catch((error) => {
-					//  ... 
-					// ... code for error handling
-				//});
-			}
-
 
 			// funzione per estrarre un array contenente le dimensioni per i poligoni
 			function getLegend(data){
@@ -274,6 +274,10 @@
 				parameters.forEach(function (p) {
 					p.addEventListener(tableau.TableauEventType.ParameterChanged, drawEveryRadar);
 				});
+			});
+			
+			tableau.extensions.settings.addEventListener(tableau.TableauEventType.SettingsChanged, (settingsEvent) => {
+				updateExtensionBasedOnSettings(settingsEvent.newSettings);
 			});
 			
 			ws_evo_bar.addEventListener(tableau.TableauEventType.MarkSelectionChanged, drawEveryRadar);
