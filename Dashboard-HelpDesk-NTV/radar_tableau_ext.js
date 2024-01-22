@@ -3,50 +3,40 @@
 
 (function () {
 	$(document).ready(function () {
+		
+		const wsNameSettingsKey = "ws_bar_name";
+		var ws_bar = undefined;
+		var wss = undefined;
+		
+		var i, row;
+		
+		/*TODO: Check if it's possible to remove these declarations */
+		var legend_options, color_data, row, color, d;
 
 		function configure() { 
 			const popupUrl = `${window.location.origin}/Dashboard-HelpDesk-NTV/settings_dialog.html`;
 			tableau.extensions.ui.displayDialogAsync(popupUrl, 0, { height: 500, width: 500 }).then((closePayload) => {
-			// The promise is resolved when the dialog has been expectedly closed, meaning that
-			// the popup extension has called tableau.extensions.ui.closeDialog.
-			// ...
-			// The close payload is returned from the popup extension via the closeDialog() method.
-			// ....
-				console.log("Payload: " + closePayload);
+				updateExtensionBasedOnSettings();
+
 			}).catch((error) => {
-				//  ... 
-				// ... code for error handling
-				console.log("Error on dialog");
 			});
 		}
 		
 		
-		function updateExtensionBasedOnSettings (settings) {
-			if (settings.selectedDatasources) {
-				activeDatasourceIdList = JSON.parse(settings.selectedDatasources);
-				console.log("numero di ds: " + activeDatasourceIdList.length);	
+		function updateExtensionBasedOnSettings () {
+			var settings = tableau.extensions.settings.getAll();
+			console.log("updating settings: " + settings);
+			console.log(settings["ws_bar_name"]);
+			wss = tableau.extensions.dashboardContent.dashboard.worksheets;
+			if(settings[wsNameSettingsKey]){
+				ws_bar = wss.find(function (sheet) {
+					return sheet.name === settings[wsNameSettingsKey];
+				});
+				console.log("nome trovato: " + ws_bar.name);
 			}
+			drawEveryRadar();
 		}
-	
-		tableau.extensions.initializeAsync({'configure': configure}).then(function () {
-			
-			const ws_agv_bar_id = 0;
-			const ws_evo_bar_id = 1;
-			
-			const ds_datamapping_name = "datamapping";
-			var wss = tableau.extensions.dashboardContent.dashboard.worksheets;
-			var ws_agv_bar = wss[ws_agv_bar_id];
-			var ws_evo_bar = wss[ws_evo_bar_id];
-			
-			const searchParams = new URLSearchParams(window.location.search);
-			var ws_agv_bar = wss.find(function (sheet) {
-				return sheet.name === "LEV1_bar";
-			});
-			
-			var i, row;
-			
-			/*TODO: Check if it's possible to remove these declarations */
-			var legend_options, color_data, row, color, d;
+
 
 			// funzione per estrarre un array contenente le dimensioni per i poligoni
 			function getLegend(data){
@@ -182,7 +172,7 @@
 		
 			// funzione che disegna tutti i radar
 			function drawEveryRadar(){
-				drawARadar(ws_agv_bar, "#the-radar");
+				drawARadar(ws_bar, "#the-radar");
 			}
 			
 			
@@ -240,6 +230,27 @@
 					}
 				}
 			}
+			
+		tableau.extensions.initializeAsync({'configure': configure}).then(function () {
+			
+			const default_ws_id = 0;						
+			const ds_datamapping_name = "datamapping";
+			
+			wss = tableau.extensions.dashboardContent.dashboard.worksheets;
+			ws_bar = wss[default_ws_id];
+			var settings = tableau.extensions.settings.getAll();
+			console.log("settings: " + settings);
+			if(settings[wsNameSettingsKey]){
+				ws_bar = wss.find(function (sheet) {
+					return sheet.name === settings[wsNameSettingsKey];
+				});
+				console.log("nome trovato: " + ws_bar.name);
+			}
+			
+			const searchParams = new URLSearchParams(window.location.search);
+			var ws_agv_bar = wss.find(function (sheet) {
+				return sheet.name === "LEV1_bar";
+			});
 
 			var debug_element = document.getElementById("TABLEAU-API-DEBUG");	
 			if(debug_element != null){
@@ -251,19 +262,17 @@
 					sheet_id = -1;
 				}
 				debugAppendWssFields(debug_element, wss, sheet_id);
-				
 			}
 
 			// lancia un refresh del datasource
-			tableau.extensions.dashboardContent.dashboard.worksheets[ws_agv_bar_id].getDataSourcesAsync().then(datasources =>
+			ws_bar.getDataSourcesAsync().then(datasources =>
 				{var dataSource = datasources.find(datasource => datasource.name === ds_datamapping_name);
 					return dataSource.refreshAsync();
 				});
 				
 
 			// deselezionano eventuali barre selezionate durante la navigazione
-			ws_agv_bar.selectMarksByValueAsync([{fieldName: 'Flotta', value: ''}], 'select-replace');
-			ws_evo_bar.selectMarksByValueAsync([{fieldName: 'Flotta', value: ''}], 'select-replace');
+			ws_bar.selectMarksByValueAsync([{fieldName: 'Flotta', value: ''}], 'select-replace');
 			  
 			// disegna i radar una prima volta
 			drawEveryRadar();
@@ -277,15 +286,14 @@
 			});
 			
 			tableau.extensions.settings.addEventListener(tableau.TableauEventType.SettingsChanged, (settingsEvent) => {
-				updateExtensionBasedOnSettings(settingsEvent.newSettings);
+				updateExtensionBasedOnSettings();
 			});
 			
-			ws_evo_bar.addEventListener(tableau.TableauEventType.MarkSelectionChanged, drawEveryRadar);
-			ws_agv_bar.addEventListener(tableau.TableauEventType.MarkSelectionChanged, drawEveryRadar);
+			ws_bar.addEventListener(tableau.TableauEventType.MarkSelectionChanged, drawEveryRadar);
 			
 			// schedula il refresh del datasource e l'aggiornamento dei disegni radar ogni 2 minuti
 			var timerID = setInterval(function() {
-				tableau.extensions.dashboardContent.dashboard.worksheets[ws_agv_bar_id].getDataSourcesAsync().then(datasources =>
+				ws_bar.getDataSourcesAsync().then(datasources =>
 					{var dataSource = datasources.find(datasource => datasource.name === ds_datamapping_name);
 						return dataSource.refreshAsync();
 					});
