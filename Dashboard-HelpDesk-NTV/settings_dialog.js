@@ -6,10 +6,9 @@
 	* This extension collects the IDs of each datasource the user is interested in
 	* and stores this information in settings when the popup is closed.
 	*/
-	const wsNameSettingsKey = 'ws_bar_name';
-	const dsNameSettingsKey = 'datasource_name';
-	const dsIntervalSettingsKey = 'datasource_interval';
-	
+	const wsNameSettingsKey = "ws_bar_name";
+	const dsNameSettingsKey = "datasource_name";
+	const dsIntervalSettingsKey = "datasource_interval";
 
 	$(document).ready(function () {
 		// The only difference between an extension in a dashboard and an extension
@@ -57,7 +56,7 @@
 			});
 			
 			
-			if(curr_interv){
+			if(Number.isInteger(curr_interv*1)){
 				$('#interval').val(curr_interv);	
 			}
 			
@@ -99,11 +98,13 @@
 	function closeDialog () {
 		const selected_ws = $("input[name='"+wsNameSettingsKey+"']:checked").val();
 		const selected_ds = $("input[name='"+dsNameSettingsKey+"']:checked").val();
-		const filled_interv = $("#interval").val();
+		const filled_interv = $("#interval").val() * 1;
 		tableau.extensions.settings.set(wsNameSettingsKey, selected_ws);
 		tableau.extensions.settings.set(dsNameSettingsKey, selected_ds);
-		if(filled_interv > 0){
-			tableau.extensions.settings.set(dsIntervalSettingsKey, filled_interv);	
+		console.log("impostato time: " + filled_interv);
+		console.log("isinteger: " + Number.isInteger(filled_interv));
+		if(Number.isInteger(filled_interv)){
+			tableau.extensions.settings.set(dsIntervalSettingsKey, filled_interv);
 		}
 
 		tableau.extensions.settings.saveAsync().then((newSavedSettings) => {

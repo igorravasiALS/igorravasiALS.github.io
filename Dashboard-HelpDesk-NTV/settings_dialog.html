@@ -17,7 +17,7 @@
     <script src="tableau.extensions.1.latest.min.js"></script>
 
     <!-- Our extension's code -->
-    <script src="./settings_dialog.js"></script>
+    <script src="./settings_dialog.js?a"></script>
   </head>
   <body>
     <div class="container">
@@ -33,7 +33,8 @@
       <div style="margin-left: 14px" id="datasources">
       </div>
       <h5>Intervallo (minuti) di refresh automatico:</h5>
-      <input style="margin-left: 14px" type="number" id="interval" name="quantity" min="1" max="60">
+	  <p style="margin-left: 14px">Impostare 0 o un numero negativo per disabilitare la funzione di refresh automatico. Se inserisci più estensioni nella dashboard disabilita il refresh automatico in tutte a parte una, per evitare continui refresh concorrenti.</p>
+      <input style="margin-left: 14px" type="number" id="interval" name="quantity" min="-1" max="60">
 
       <hr />
       <button id="closeButton">Applica e chiudi</button>
