@@ -69,12 +69,21 @@
 			}
 						
 			if(settings[rdrCfgSettingsKey]){
-				radar_cfg = JSON.parse(settings[rdrCfgSettingsKey]);
+				try {
+					radar_cfg = JSON.parse(settings[rdrCfgSettingsKey]);
+				} catch (e) {
+					console.log("Error parsing json " + e);
+				} 
 			}
 			
 			if(onEvent){
 				drawEveryRadar();	
 				setTimerRefresh();
+			} else {
+				if(!settings[rdrDefCfgSettingsKey]){
+					tableau.extensions.settings.set(rdrDefCfgSettingsKey, JSON.stringify(radar_def_cfg));
+					tableau.extensions.settings.saveAsync();
+				}
 			}
 		}
 
