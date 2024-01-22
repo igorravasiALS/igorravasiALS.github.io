@@ -67,13 +67,9 @@
 			if(settings[dsIntervalSettingsKey]){
 				ds_refresh_mins = settings[dsIntervalSettingsKey];
 			}
-			
-			console.log("Found " +  settings[rdrCfgSettingsKey]);
-			
+						
 			if(settings[rdrCfgSettingsKey]){
 				radar_cfg = JSON.parse(settings[rdrCfgSettingsKey]);
-				console.log("parsed as");
-				console.log(radar_cfg);
 			}
 			
 			if(onEvent){

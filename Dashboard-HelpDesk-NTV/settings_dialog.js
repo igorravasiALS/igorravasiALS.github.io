@@ -58,10 +58,10 @@
 			
 						
 			if(curr_cfg){
-				$('#jcfg').val(curr_cfg);
+				$('#jcfg').val(JSON.stringify(JSON.parse(curr_cfg), null, '\t'));
 			}
 			if(def_cfg) {
-				$('#jdefcfg').val(def_cfg);
+				$('#jdefcfg').val(JSON.stringify(JSON.parse(def_cfg), null, '\t'));
 			}
 			
 
