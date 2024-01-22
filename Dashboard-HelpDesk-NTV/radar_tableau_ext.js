@@ -7,6 +7,11 @@
 		const wsNameSettingsKey = "ws_bar_name";
 		const dsNameSettingsKey = "datasource_name";
 		const dsIntervalSettingsKey = "datasource_interval";
+		const rdrCfgSettingsKey = "radar_cfg_json";
+		const rdrDefCfgSettingsKey = "radar_defcfg_json";
+		
+		const repoFleetFieldName = "Flotta";
+		const repoLegendLabelCurrent ="Disp. corrente";
 		
 		var ext_id = -1;
 		var ws_bar = undefined;
@@ -15,12 +20,24 @@
 		var ds_refresh_mins = undefined;
 		
 		var timer_refresh = undefined;
+		var radar_cfg = undefined;
 		
-		var i, row;
+		const radar_def_cfg = {
+			w: 240,
+			h: 240,
+			maxValue: 1,
+			levels: 10,
+			ExtraWidthX: 150,
+			ExtraWidthY: 60,
+			radius: 5,
+			factor: 1,
+			factorLegend: .85,
+			ToRight: 0,
+			TranslateX: 60,
+			TranslateY: 30,
+			colors_raw: ["#a8a8a8", "#265f95"]
+		}
 		
-		/*TODO: Check if it's possible to remove these declarations */
-		var legend_options, color_data, row, color, d;
-
 		function configure() { 
 
 			const parentUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
@@ -32,12 +49,9 @@
 		}
 		
 		
-		function updateExtensionBasedOnSettings (redraw = false) {
+		function updateExtensionBasedOnSettings (onEvent = false) {
 			const settings = tableau.extensions.settings.getAll();
-			console.log("wsname(" + ext_id + "): "+settings[wsNameSettingsKey]);
-			console.log("dsname(" + ext_id + "): "+settings[dsNameSettingsKey]);
-			console.log("dstime(" + ext_id + "): "+settings[dsIntervalSettingsKey]);
-			
+						
 			wss = tableau.extensions.dashboardContent.dashboard.worksheets;
 			if(settings[wsNameSettingsKey]){
 				var tmp_ws_bar = wss.find(function (sheet) {
@@ -45,7 +59,6 @@
 				});
 				if(tmp_ws_bar){
 					ws_bar = tmp_ws_bar;
-					console.log("nome trovato: " + ws_bar.name);
 				}	
 			}
 			if(settings[dsNameSettingsKey]){
@@ -54,7 +67,16 @@
 			if(settings[dsIntervalSettingsKey]){
 				ds_refresh_mins = settings[dsIntervalSettingsKey];
 			}
-			if(redraw){
+			
+			console.log("Found " +  settings[rdrCfgSettingsKey]);
+			
+			if(settings[rdrCfgSettingsKey]){
+				radar_cfg = JSON.parse(settings[rdrCfgSettingsKey]);
+				console.log("parsed as");
+				console.log(radar_cfg);
+			}
+			
+			if(onEvent){
 				drawEveryRadar();	
 				setTimerRefresh();
 			}
@@ -63,10 +85,7 @@
 		function refreshDatasource(){
 			ws_bar.getDataSourcesAsync().then(datasources =>
 			{var dataSource = datasources.find(datasource => datasource.name === ds_refresh_name);
-				return dataSource.refreshAsync().then( a 	=> {
-					console.log(ext_id + " ended at " + getCurrentTime())
-					}
-				);
+				return dataSource.refreshAsync()
 			});
 		}
 		
@@ -77,19 +96,16 @@
 			/* Negative or zero ds_refresh_mins means that auto refresh is disabled */
 			if(ds_refresh_mins > 0) {
 				timer_refresh = setInterval(function() {
-					console.log(ext_id + " timer fired " + getCurrentTime());
 					refreshDatasource();
 					drawEveryRadar();
 				}, ds_refresh_mins * 60 * 1000); 
-			} else {
-				console.log(ext_id + " Refresh disabled");
 			}
 		}
 
 		// funzione per estrarre un array contenente le dimensioni per i poligoni
 		function getLegend(data){
 			var legend = [];
-			
+			var i;
 			for(i in data){
 				legend[i]=data[i][2].formattedValue;
 			}
@@ -103,11 +119,10 @@
 		  
 		// funzione per estrarre un array contente lo stato di aggiornamento del dato per ogni treno
 		function getColor(data){
-			const legend_label_current = "Disp. corrente";
-			row = [];
-			
+			var row = [];
+			var i;
 			for(i in data){
-				if(data[i][2].formattedValue==legend_label_current){
+				if(data[i][2].formattedValue==repoLegendLabelCurrent){
 					row.push({
 						axis: data[i][3].value,
 						value: data[i][0].value
@@ -123,12 +138,14 @@
 				}
 			}
 			
-			color = row.sort(sortFunc);
+			var color = row.sort(sortFunc);
 			return color;
 		}
 			
 		// funzione per trasformare i dati in un array strutturato come serve alla funzione che disegna il radar
 		function getBestData(data) {
+			var i;
+			var row;
 			var legend_options = getLegend(data);
 			var nicedata = [];
 			
@@ -177,43 +194,21 @@
 		
 		// funzione che disegna il radar, qui si possono cambiare alcuni parametri come larghezza e altezza
 		function drawRadar(best_data, legend_labels, colors, html_id){
-			/*TODO: Check if necessary to assign new names... or remove */
-			var data, legend_options, color_data;
-			data = best_data;
-			color_data = colors;
-			legend_options=legend_labels;	//TODO: Check if it's possible to remove it, it seems to be not used
+						
+			var my_cfg = JSON.parse(JSON.stringify(radar_cfg)); //Clone instead of assigning by reference
 			
-			/* TODO:Remove, unused.
-				var colorscale = d3.scale.ordinal().range(["#a8a8a8", "#265f95"]);
-			*/
-				
+			my_cfg.color = d3.scale.ordinal().range(my_cfg.colors_raw);			
+			my_cfg.colordata = colors;
+			my_cfg.radians = 2 * Math.PI;
 			
-			var mycfg = {
-				w: 240,
-				h: 240,
-				maxValue: 1,
-				levels: 10,
-				ExtraWidthX: 150,
-				ExtraWidthY: 60,
-				radius: 5,
-				factor: 1,
-				factorLegend: .85,
-				radians: 2 * Math.PI,
-				ToRight: 0,
-				TranslateX: 60,
-				TranslateY: 30,
-				color: d3.scale.ordinal().range(["#a8a8a8", "#265f95"]),
-				colordata: color_data
-			}
-
-			RadarChart.draw(html_id, data, mycfg);   
+			RadarChart.draw(html_id, best_data, my_cfg);   
 		}
 
 		function drawARadar(ws, html_id){
 			ws.getSummaryDataAsync().then(function (sumdata) {
-				legend_options = getLegend(sumdata.data);
-				color_data = getColor(sumdata.data);
-				d = getBestData(sumdata.data);
+				var legend_options = getLegend(sumdata.data);
+				var color_data = getColor(sumdata.data);
+				var d = getBestData(sumdata.data);
 				drawRadar(d, legend_options, color_data, html_id);
 			});
 		}
@@ -226,6 +221,7 @@
 		
 		function getWssNames(wss){
 			var names = [];
+			var i;
 			for(i = 0; i < wss.length; i++){
 				names.push("worksheet[" + i + "]: " + wss[i].name);
 			}
@@ -261,6 +257,7 @@
 		}	
 
 		function debugAppendWsFields(where, label, ws){
+			var i;
 			ws.getSummaryDataAsync().then(function (sum_data) {
 				var columns = sum_data.columns;
 				var column_names = [];
@@ -272,6 +269,7 @@
 		}
 
 		function debugAppendWssFields(where, wss, id){
+			var i;
 			for(i = 0; i < wss.length; i++){
 				if(id < 0 || id == i) {
 					debugAppendWsFields(where, "Field names in worksheet " + wss[i].name + ":", wss[i]);	
@@ -306,42 +304,42 @@
 			ws_bar = wss[0];
 			ds_refresh_name = "datamapping";
 			ds_refresh_mins = -1; //Disabled
-			
+			radar_cfg =  JSON.parse(JSON.stringify(radar_def_cfg)); //Clone instead of assigning by reference
 			/* Load real persistent settings from tableau */
 			updateExtensionBasedOnSettings(false);
 			
 			/* Print debug info in requested */
 			checkAndPrintDebug();
 
-			// lancia un refresh del datasource
 			/* Run a first datasource refresh (only if auto refresh is enabled) */
 			/* TODO: Check if it's better to remove it or if there is a real need */
 			if(ds_refresh_mins > 0){
-				console.log(ext_id + " first refresh started");
 				refreshDatasource();
 			}
 
 			// deselezionano eventuali barre selezionate durante la navigazione
-			ws_bar.selectMarksByValueAsync([{fieldName: 'Flotta', value: ''}], 'select-replace');
+			ws_bar.selectMarksByValueAsync([{fieldName: repoFleetFieldName, value: ''}], 'select-replace');
 			  
-			// disegna i radar una prima volta
+			/* Draw the radar una-tantum */
 			drawEveryRadar();
 			  
-			// aggiungono event listener al parametro per il periodo precedente, ai grafici a barre e al filtro servizio. 
-			// Questi event listener disegnano entrambi i radar.
+			/* Eventually add event listeners to redraw the radar ...*/
+			/* ...Listen to parameter changes (e.g. change of in-service filter or 'previous' hours value) */
 			tableau.extensions.dashboardContent.dashboard.getParametersAsync().then(function (parameters) {
 				parameters.forEach(function (p) {
 					p.addEventListener(tableau.TableauEventType.ParameterChanged, drawEveryRadar);
 				});
 			});
 			
+			/* ...Listen to dashboard extension setting changes (to redray the radar asap when dashboad editor change a value in the configuration settings */
 			tableau.extensions.settings.addEventListener(tableau.TableauEventType.SettingsChanged, (settingsEvent) => {
 				updateExtensionBasedOnSettings(true);
 			});
 			
+			/* ...Listen to mark selection (e.g. user clicks on an item causing change of the selection) */
 			ws_bar.addEventListener(tableau.TableauEventType.MarkSelectionChanged, drawEveryRadar);
 			
-			// schedula il refresh del datasource e l'aggiornamento dei disegni radar ogni 2 minuti
+			/* Set an interval to periodically redraw the radar (with an optional auto-refresh of the datasource)  */
 			setTimerRefresh();
 				
 		}, function (err) {
