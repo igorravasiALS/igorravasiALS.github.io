@@ -8,7 +8,6 @@
 		const dsNameSettingsKey = "datasource_name";
 		const dsIntervalSettingsKey = "datasource_interval";
 		const rdrCfgSettingsKey = "radar_cfg_json";
-		const rdrDefCfgSettingsKey = "radar_defcfg_json";
 		
 		const repoFleetFieldName = "Flotta";
 		const repoLegendLabelCurrent ="Disp. corrente";
@@ -42,7 +41,9 @@
 
 			const parentUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
 			const popupUrl = `${parentUrl}/settings_dialog.html`;
-			tableau.extensions.ui.displayDialogAsync(popupUrl, 0, { height: 500, width: 500 }).then((closePayload) => {
+			const openPayload = {};
+			openPayload["default_radar_cfg"] = radar_def_cfg;
+			tableau.extensions.ui.displayDialogAsync(popupUrl, JSON.stringify(openPayload), { height: 500, width: 500 }).then((closePayload) => {
 				updateExtensionBasedOnSettings(true);
 			}).catch((error) => {
 			});
@@ -71,19 +72,14 @@
 			if(settings[rdrCfgSettingsKey]){
 				try {
 					radar_cfg = JSON.parse(settings[rdrCfgSettingsKey]);
-				} catch (e) {
-					console.log("Error parsing json " + e);
-				} 
+				} catch { 
+					radar_cfg = radar_def_cfg;
+				}
 			}
 			
 			if(onEvent){
 				drawEveryRadar();	
 				setTimerRefresh();
-			} else {
-				if(!settings[rdrDefCfgSettingsKey]){
-					tableau.extensions.settings.set(rdrDefCfgSettingsKey, JSON.stringify(radar_def_cfg));
-					tableau.extensions.settings.saveAsync();
-				}
 			}
 		}
 
@@ -197,7 +193,6 @@
 			return bestdata;
 		}
 		
-		// funzione che disegna il radar, qui si possono cambiare alcuni parametri come larghezza e altezza
 		function drawRadar(best_data, legend_labels, colors, html_id){
 						
 			var my_cfg = JSON.parse(JSON.stringify(radar_cfg)); //Clone instead of assigning by reference
@@ -218,12 +213,10 @@
 			});
 		}
 	
-		// funzione che disegna tutti i radar
 		function drawEveryRadar(){
 			drawARadar(ws_bar, "#the-radar");
 		}
-		
-		
+				
 		function getWssNames(wss){
 			var names = [];
 			var i;

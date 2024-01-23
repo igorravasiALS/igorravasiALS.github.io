@@ -10,8 +10,8 @@
 	const dsNameSettingsKey = "datasource_name";
 	const dsIntervalSettingsKey = "datasource_interval";
 	const rdrCfgSettingsKey = "radar_cfg_json";
-	const rdrDefCfgSettingsKey = "radar_defcfg_json";
-
+	const msgNoOverride = "*** No ovverride *** using default";
+	
 	$(document).ready(function () {
 		tableau.extensions.initializeDialogAsync().then(function (openPayload) {
 			$('#closeButton').click(closeDialog);
@@ -21,8 +21,8 @@
 			const curr_ws = tableau.extensions.settings.get(wsNameSettingsKey);
 			const curr_ds = tableau.extensions.settings.get(dsNameSettingsKey);
 			const curr_interv = tableau.extensions.settings.get(dsIntervalSettingsKey);
-			const curr_cfg = tableau.extensions.settings.get(rdrCfgSettingsKey);
-			const def_cfg = tableau.extensions.settings.get(rdrDefCfgSettingsKey);
+			const curr_cfg_str = tableau.extensions.settings.get(rdrCfgSettingsKey);
+			const def_cfg = JSON.parse(openPayload)["default_radar_cfg"];
 			
 			var visibleDatasources = [];
 
@@ -56,19 +56,21 @@
 				$('#interval').val(curr_interv);	
 			}
 			
-						
-			if(curr_cfg){
-				$('#jcfg').val(JSON.stringify(JSON.parse(curr_cfg), null, '\t'));
+			if(curr_cfg_str){
+				try {
+					$('#jcfg').val(JSON.stringify(JSON.parse(curr_cfg_str), null, '\t'));
+				} catch (e) {
+					$('#jcfg').val(msgNoOverride);
+				}
 			}
 			if(def_cfg) {
-				$('#jdefcfg').val(JSON.stringify(JSON.parse(def_cfg), null, '\t'));
+				try {
+					$('#jdefcfg').val(JSON.stringify(def_cfg, null, '\t'));
+				} catch { }
 			}
-			
 
 		});
 	});
-
-
 
 	function addRadioItemToUI (label, isActive, radioName, containerSelector) {
 		const containerDiv = $('<div />');
@@ -105,11 +107,14 @@
 		
 		tableau.extensions.settings.set(wsNameSettingsKey, selected_ws);
 		tableau.extensions.settings.set(dsNameSettingsKey, selected_ds);
-		if(jcfg.length>0){
-			tableau.extensions.settings.set(rdrCfgSettingsKey, jcfg);
-		} else {
-			tableau.extensions.settings.erase(rdrCfgSettingsKey);	
+		
+		var parsed_jcfg = undefined;
+		try {
+			parsed_jcfg = JSON.stringify(JSON.parse(jcfg));
+		} catch {
+			parsed_jcfg = msgNoOverride;
 		}
+		tableau.extensions.settings.set(rdrCfgSettingsKey, parsed_jcfg);
 
 
 		if(Number.isInteger(filled_interv)){
