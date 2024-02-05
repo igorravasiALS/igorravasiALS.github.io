@@ -16,6 +16,7 @@
 // Wrap everything in an anonymous function to avoid polluting the global namespace
 (function () {
   const defaultIntervalInMin = '2';
+  var intervalInMin = defaultIntervalInMin;
   let activeDatasourceIdList = [];
   var timer_refresh = undefined;
 	
@@ -31,7 +32,7 @@
       // changed for this extension, in the parent or popup (i.e. when settings.saveAsync is called).
 	  
 	  updateExtensionBasedOnSettings(tableau.extensions.settings.getAll());
-	  
+	  setupRefreshInterval(intervalInMin);
       tableau.extensions.settings.addEventListener(tableau.TableauEventType.SettingsChanged, (settingsEvent) => {
         updateExtensionBasedOnSettings(settingsEvent.newSettings);
       });
@@ -116,5 +117,8 @@
     if (settings.selectedDatasources) {
       activeDatasourceIdList = JSON.parse(settings.selectedDatasources);
     }
+	if(settings.requestedInterval){
+	  intervalInMin = settings.requestedInterval;
+	}
   }
 })();

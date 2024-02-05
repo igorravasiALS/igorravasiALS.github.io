@@ -24,6 +24,7 @@
    * and stores this information in settings when the popup is closed.
    */
   const datasourcesSettingsKey = 'selectedDatasources';
+  const intervalSettingsKey = 'requestedInterval';
   let selectedDatasources = [];
 
   $(document).ready(function () {
@@ -36,12 +37,17 @@
       // default time interval for the refreshes.  This could alternatively be stored
       // in settings, but is used in this sample to demonstrate open and close payloads.
       $('#interval').val(openPayload);
+	  if (settings.requestedInterval) {
+		$('#interval').val(settings.requestedInterval);
+      }
+
+	  
       $('#closeButton').click(closeDialog);
 
       const dashboard = tableau.extensions.dashboardContent.dashboard;
       const visibleDatasources = [];
       selectedDatasources = parseSettingsForActiveDataSources();
-
+	
       // Loop through datasources in this sheet and create a checkbox UI
       // element for each one.  The existing settings are used to
       // determine whether a datasource is checked by default or not.
@@ -118,7 +124,7 @@
    */
   function closeDialog () {
     tableau.extensions.settings.set(datasourcesSettingsKey, JSON.stringify(selectedDatasources));
-
+	tableau.extensions.settings.set(intervalSettingsKey, $('#interval').val());
     tableau.extensions.settings.saveAsync().then((newSavedSettings) => {
       tableau.extensions.ui.closeDialog($('#interval').val());
     });
