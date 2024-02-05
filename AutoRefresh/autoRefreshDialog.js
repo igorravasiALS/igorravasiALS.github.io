@@ -25,6 +25,7 @@
    */
   const datasourcesSettingsKey = 'selectedDatasources';
   const intervalSettingsKey = 'requestedInterval';
+  const startupSettingsKey = 'doRefreshAtStartup';
   let selectedDatasources = [];
 
   $(document).ready(function () {
@@ -37,10 +38,14 @@
       // default time interval for the refreshes.  This could alternatively be stored
       // in settings, but is used in this sample to demonstrate open and close payloads.
       $('#interval').val(openPayload);
-	  if (settings.requestedInterval) {
+	  
+	  const settings = tableau.extensions.settings.getAll();
+	  if (!(undefined === settings.requestedInterval)) {
 		$('#interval').val(settings.requestedInterval);
       }
-
+	  if (!(undefined === settings.doRefreshAtStartup)) {
+		$('#startup').val(settings.doRefreshAtStartup);
+      }
 	  
       $('#closeButton').click(closeDialog);
 
@@ -125,6 +130,7 @@
   function closeDialog () {
     tableau.extensions.settings.set(datasourcesSettingsKey, JSON.stringify(selectedDatasources));
 	tableau.extensions.settings.set(intervalSettingsKey, $('#interval').val());
+	tableau.extensions.settings.set(startupSettingsKey, $('#startup').val());
     tableau.extensions.settings.saveAsync().then((newSavedSettings) => {
       tableau.extensions.ui.closeDialog($('#interval').val());
     });

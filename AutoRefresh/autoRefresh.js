@@ -30,9 +30,15 @@
       // This event allows for the parent extension and popup extension to keep their
       // settings in sync.  This event will be triggered any time a setting is
       // changed for this extension, in the parent or popup (i.e. when settings.saveAsync is called).
-	  
-	  updateExtensionBasedOnSettings(tableau.extensions.settings.getAll());
+	  const settings = tableau.extensions.settings.getAll();
+	  updateExtensionBasedOnSettings(settings);
 	  setupRefreshInterval(intervalInMin);
+	  if (!(undefined === settings.doRefreshAtStartup)) {
+		  if(settings.doRefreshAtStartup){
+			  console.log("startup refresh");
+			  doRefresh();
+		  }
+	  }
       tableau.extensions.settings.addEventListener(tableau.TableauEventType.SettingsChanged, (settingsEvent) => {
         updateExtensionBasedOnSettings(settingsEvent.newSettings);
       });
@@ -84,17 +90,7 @@
       });
   }
 
-  /**
-   * This function sets up a JavaScript interval based on the time interval selected
-   * by the user.  This interval will refresh all selected datasources.
-   */
-  function setupRefreshInterval (interval) {
-	  //TODO: Remove log
-	  console.log("setting interval " + interval);
-    if(timer_refresh){
-		clearInterval(timer_refresh);
-	}
-	timer_refresh = setInterval(function () {
+	function doRefresh() {
 	  //TODO: Remove log
 	  console.log("running refresh");
       const dashboard = tableau.extensions.dashboardContent.dashboard;
@@ -107,7 +103,19 @@
           });
         });
       });
-    }, interval * 60 * 1000);
+    }
+
+  /**
+   * This function sets up a JavaScript interval based on the time interval selected
+   * by the user.  This interval will refresh all selected datasources.
+   */
+  function setupRefreshInterval (interval) {
+	  //TODO: Remove log
+	  console.log("setting interval " + interval);
+    if(timer_refresh){
+		clearInterval(timer_refresh);
+	}
+	timer_refresh = setInterval(doRefresh, interval * 60 * 1000);
   }
 
   /**
