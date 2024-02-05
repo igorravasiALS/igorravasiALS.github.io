@@ -66,7 +66,9 @@
 			if(def_cfg) {
 				try {
 					$('#jdefcfg').val(JSON.stringify(def_cfg, null, '\t'));
-				} catch { }
+				} catch (e){ 
+					console.log("err: " + e);
+				}
 			}
 
 		});
@@ -111,7 +113,8 @@
 		var parsed_jcfg = undefined;
 		try {
 			parsed_jcfg = JSON.stringify(JSON.parse(jcfg));
-		} catch {
+		} catch (e) {
+			console.log("Err: " + e);
 			parsed_jcfg = msgNoOverride;
 		}
 		tableau.extensions.settings.set(rdrCfgSettingsKey, parsed_jcfg);

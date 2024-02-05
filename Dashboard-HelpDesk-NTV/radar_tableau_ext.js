@@ -72,7 +72,8 @@
 			if(settings[rdrCfgSettingsKey]){
 				try {
 					radar_cfg = JSON.parse(settings[rdrCfgSettingsKey]);
-				} catch { 
+				} catch (error) { 
+					console.log("Err: " + error);
 					radar_cfg = radar_def_cfg;
 				}
 			}
