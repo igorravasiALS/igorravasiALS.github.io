@@ -17,7 +17,8 @@
 (function () {
   const defaultIntervalInMin = '2';
   let activeDatasourceIdList = [];
-
+  var timer_refresh = undefined;
+	
   $(document).ready(function () {
     // When initializing an extension, an optional object is passed that maps a special ID (which
     // must be 'configure') to a function.  This, in conjuction with adding the correct context menu
@@ -28,6 +29,9 @@
       // This event allows for the parent extension and popup extension to keep their
       // settings in sync.  This event will be triggered any time a setting is
       // changed for this extension, in the parent or popup (i.e. when settings.saveAsync is called).
+	  
+	  updateExtensionBasedOnSettings(tableau.extensions.settings.getAll());
+	  
       tableau.extensions.settings.addEventListener(tableau.TableauEventType.SettingsChanged, (settingsEvent) => {
         updateExtensionBasedOnSettings(settingsEvent.newSettings);
       });
@@ -42,15 +46,8 @@
 	const popupUrl = `${parentUrl}/autoRefreshDialog.html`;
 
     // This checks for the selected dialog style in the radio form.
-    let dialogStyle;
-    const dialogStyleOptions = document.getElementsByName('dialogStyleRadio');
-    if (dialogStyleOptions[0].checked) {
-      dialogStyle = tableau.DialogStyle.Modal;
-    } else if (dialogStyleOptions[1].checked) {
-      dialogStyle = tableau.DialogStyle.Modeless;
-    } else {
-      dialogStyle = tableau.DialogStyle.Window;
-    }
+    const dialogStyle = tableau.DialogStyle.Modal;
+    
 
     /**
      * This is the API call that actually displays the popup extension to the user.  The
@@ -68,11 +65,9 @@
       .then((closePayload) => {
         // The promise is resolved when the dialog has been expectedly closed, meaning that
         // the popup extension has called tableau.extensions.ui.closeDialog.
-        $('#inactive').hide();
-        $('#active').show();
 
         // The close payload is returned from the popup extension via the closeDialog method.
-        $('#interval').text(closePayload);
+        
         setupRefreshInterval(closePayload);
       })
       .catch((error) => {
@@ -93,7 +88,14 @@
    * by the user.  This interval will refresh all selected datasources.
    */
   function setupRefreshInterval (interval) {
-    setInterval(function () {
+	  //TODO: Remove log
+	  console.log("setting interval " + interval);
+    if(timer_refresh){
+		clearInterval(timer_refresh);
+	}
+	timer_refresh = setInterval(function () {
+	  //TODO: Remove log
+	  console.log("running refresh");
       const dashboard = tableau.extensions.dashboardContent.dashboard;
       dashboard.worksheets.forEach(function (worksheet) {
         worksheet.getDataSourcesAsync().then(function (datasources) {
@@ -113,7 +115,6 @@
   function updateExtensionBasedOnSettings (settings) {
     if (settings.selectedDatasources) {
       activeDatasourceIdList = JSON.parse(settings.selectedDatasources);
-      $('#datasourceCount').text(activeDatasourceIdList.length);
     }
   }
 })();
