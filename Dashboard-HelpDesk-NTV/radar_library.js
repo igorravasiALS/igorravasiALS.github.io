@@ -127,7 +127,7 @@ var RadarChart = {
 		.attr("cursor", "pointer")
 		.attr("dy", "1.5em")
 		.attr("transform", function(d, i){return "translate(0, -15)"})
-		.attr("x", function(d, i){return cfg.w/2*(1-cfg.factorLegend*Math.sin(i*cfg.radians/total))-60*Math.sin(i*cfg.radians/total);})
+		.attr("x", function(d, i){return cfg.w/2*(1-cfg.factorLegend*Math.sin(i*cfg.radians/total))-53*Math.sin(i*cfg.radians/total);})
 		.attr("y", function(d, i){return cfg.h/2*(1-Math.cos(i*cfg.radians/total))-20*Math.cos(i*cfg.radians/total);})
 		.on('click', function(d) {
 			//sessionStorage.setItem("train", d);
