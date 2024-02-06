@@ -16,7 +16,10 @@ var RadarChart = {
 	 ExtraWidthX: 100,
 	 ExtraWidthY: 100,
 	 color: d3.scale.category10(),
-	 colordata: "black"
+	 colordata: "black",
+	 axis_font_size: "12px",
+	 axis_font_family: "Trebuchet MS",
+	 axis_font_weight: "normal"
 	};
 	
 	if('undefined' !== typeof options){
@@ -99,9 +102,9 @@ var RadarChart = {
 	axis.append("text")
 		.attr("class", "legend")
 		.text(function(d){return d})
-		.style("font-family", "Trebuchet MS")
-		.style("font-size", "12px")
-		.style("font-weight", "normal")
+		.style("font-family", cfg.axis_font_family)
+		.style("font-size", cfg.axis_font_size)
+		.style("font-weight", cfg.axis_font_weight)
 		.style("fill",function(d){
 			
 			for (i in cfg.colordata){
