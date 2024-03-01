@@ -24,10 +24,13 @@
    * and stores this information in settings when the popup is closed.
    */
   const datasourcesSettingsKey = 'selectedDatasources';
+  const parametersSettingsKey = 'selectedParameter';
   const intervalSettingsKey = 'requestedInterval';
   const startupSettingsKey = 'doRefreshAtStartup';
+  const authoringSettingsKey = 'doRefreshInAuthMode';
   let selectedDatasources = [];
-
+  let selectedParameter = '';
+  
   $(document).ready(function () {
     // The only difference between an extension in a dashboard and an extension
     // running in a popup is that the popup extension must use the method
@@ -43,8 +46,27 @@
 	  if (!(undefined === settings.requestedInterval)) {
 		$('#interval').val(settings.requestedInterval);
       }
+	  
+	  let bool_startupval = false;
 	  if (!(undefined === settings.doRefreshAtStartup)) {
-		$('#startup').val(settings.doRefreshAtStartup);
+		if(settings.doRefreshAtStartup.toLowerCase() === "true"){
+			bool_startupval = true;
+		}
+      }
+
+	  $('#startup').prop('checked', bool_startupval);
+	  
+	  let bool_authval = false;
+	  if (!(undefined === settings.doRefreshInAuthMode)) {
+		if(settings.doRefreshInAuthMode.toLowerCase() === "true"){
+			bool_authval = true;
+		}
+      }
+	  
+	  $('#authoring').prop('checked', bool_authval);
+	  
+	  if (!(undefined === settings.selectedParameter)) {
+		selectedParameter = settings.selectedParameter;
       }
 	  
       $('#closeButton').click(closeDialog);
@@ -52,22 +74,31 @@
       const dashboard = tableau.extensions.dashboardContent.dashboard;
       const visibleDatasources = [];
       selectedDatasources = parseSettingsForActiveDataSources();
-	
+	  
+	  
       // Loop through datasources in this sheet and create a checkbox UI
       // element for each one.  The existing settings are used to
       // determine whether a datasource is checked by default or not.
       dashboard.worksheets.forEach(function (worksheet) {
         worksheet.getDataSourcesAsync().then(function (datasources) {
           datasources.forEach(function (datasource) {
-            const isActive = selectedDatasources.indexOf(datasource.id) >= 0;
+            const isActive = selectedDatasources.indexOf(datasource.name) >= 0;
 
-            if (visibleDatasources.indexOf(datasource.id) < 0) {
+            if (visibleDatasources.indexOf(datasource.name) < 0) {
               addDataSourceItemToUI(datasource, isActive);
-              visibleDatasources.push(datasource.id);
+              visibleDatasources.push(datasource.name);
             }
           });
         });
       });
+	  
+	  
+	  tableau.extensions.dashboardContent.dashboard.getParametersAsync().then(function (parameters) {
+	    parameters.forEach(function (p) {
+			  addParameterItemToUI(p, p.name === selectedParameter);
+	    });
+	  });
+	  
     });
   });
 
@@ -107,16 +138,16 @@
 
     $('<input />', {
       type: 'checkbox',
-      id: datasource.id,
+      id: datasource.name,
       value: datasource.name,
       checked: isActive,
       click: function () {
-        updateDatasourceList(datasource.id);
+        updateDatasourceList(datasource.name);
       }
     }).appendTo(containerDiv);
 
     $('<label />', {
-      for: datasource.id,
+      for: datasource.name,
       text: datasource.name
     }).appendTo(containerDiv);
 
@@ -124,13 +155,38 @@
   }
 
   /**
+   * UI helper that adds a checkbox item to the UI for a parameter.
+   */
+  function addParameterItemToUI (param, isActive) {
+    const containerDiv = $('<div />');
+
+    $('<input />', {
+      type: 'radio',
+      id: param.name,
+      value: param.name,
+	  name: parametersSettingsKey,
+      checked: isActive
+    }).appendTo(containerDiv);
+
+    $('<label />', {
+      for: param.name,
+      text: param.name
+    }).appendTo(containerDiv);
+
+    $('#parameters').append(containerDiv);
+  }
+  
+  /**
    * Stores the selected datasource IDs in the extension settings,
    * closes the dialog, and sends a payload back to the parent.
    */
   function closeDialog () {
     tableau.extensions.settings.set(datasourcesSettingsKey, JSON.stringify(selectedDatasources));
+	tableau.extensions.settings.set(parametersSettingsKey, $("input[name='"+parametersSettingsKey+"']:checked").val());
+	
 	tableau.extensions.settings.set(intervalSettingsKey, $('#interval').val());
-	tableau.extensions.settings.set(startupSettingsKey, $('#startup').val());
+	tableau.extensions.settings.set(startupSettingsKey, $('#startup').prop('checked'));
+	tableau.extensions.settings.set(authoringSettingsKey, $('#authoring').prop('checked'));
     tableau.extensions.settings.saveAsync().then((newSavedSettings) => {
       tableau.extensions.ui.closeDialog($('#interval').val());
     });

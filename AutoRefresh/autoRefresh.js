@@ -16,10 +16,14 @@
 // Wrap everything in an anonymous function to avoid polluting the global namespace
 (function () {
   const defaultIntervalInMin = '2';
+  const checkIntervalSecs = 10;
   var intervalInMin = defaultIntervalInMin;
   let activeDatasourceIdList = [];
+  let activeParameterName = '';
   var timer_refresh = undefined;
-	
+  let refresh_enabled = false;
+  let last_refresh = new Date();
+  
   $(document).ready(function () {
     // When initializing an extension, an optional object is passed that maps a special ID (which
     // must be 'configure') to a function.  This, in conjuction with adding the correct context menu
@@ -32,13 +36,15 @@
       // changed for this extension, in the parent or popup (i.e. when settings.saveAsync is called).
 	  const settings = tableau.extensions.settings.getAll();
 	  updateExtensionBasedOnSettings(settings);
-	  setupRefreshInterval(intervalInMin);
+	  
+	  setupRefreshInterval();
 	  if (!(undefined === settings.doRefreshAtStartup)) {
-		  if(settings.doRefreshAtStartup){
-			  console.log("startup refresh");
+		  if(settings.doRefreshAtStartup.toLowerCase()==="true"){
+			  console.log("Startup Refresh @ " + new Date().toISOString());
 			  doRefresh();
 		  }
-	  }
+	  }	  
+	  
       tableau.extensions.settings.addEventListener(tableau.TableauEventType.SettingsChanged, (settingsEvent) => {
         updateExtensionBasedOnSettings(settingsEvent.newSettings);
       });
@@ -74,15 +80,14 @@
         // the popup extension has called tableau.extensions.ui.closeDialog.
 
         // The close payload is returned from the popup extension via the closeDialog method.
-        
-        setupRefreshInterval(closePayload);
+        intervalInMin = closePayload;
       })
       .catch((error) => {
         // One expected error condition is when the popup is closed by the user (meaning the user
         // clicks the 'X' in the top right of the dialog).  This can be checked for like so:
         switch (error.errorCode) {
           case tableau.ErrorCodes.DialogClosedByUser:
-            console.log('Dialog was closed by user');
+            console.log("Dialog was closed by user");
             break;
           default:
             console.error(error.message);
@@ -90,43 +95,108 @@
       });
   }
 
+	function warnOtherExtensions() {
+		const dashboard = tableau.extensions.dashboardContent.dashboard;
+		dashboard.getParametersAsync().then(function (parameters) {
+			parameters.forEach(function (p) {
+				if(p.name === activeParameterName) {
+					console.log("Triggering value change of parameter " + p.name + " @ " + new Date().toISOString());
+					p.changeValueAsync(last_refresh.toISOString());
+				}
+			});
+		});
+	}
+
 	function doRefresh() {
-	  //TODO: Remove log
-	  console.log("running refresh");
+      if(!refresh_enabled){
+		  return;
+	  }
+	  console.log("Doing refresh @ " + new Date().toISOString());
       const dashboard = tableau.extensions.dashboardContent.dashboard;
+	  let ds_to_refresh = [];
+	  let ds_name_to_refresh = [];
+	  		
+
       dashboard.worksheets.forEach(function (worksheet) {
         worksheet.getDataSourcesAsync().then(function (datasources) {
+		  
           datasources.forEach(function (datasource) {
-            if (activeDatasourceIdList.indexOf(datasource.id) >= 0) {
-              datasource.refreshAsync();
+            if (activeDatasourceIdList.indexOf(datasource.name) >= 0 && ds_name_to_refresh.indexOf(datasource.name) < 0) {
+				ds_to_refresh.push(datasource);
+				ds_name_to_refresh.push(datasource.name);
+				datasource.refreshAsync().then(function (){
+					last_refresh = new Date();
+					console.log("Refreshed " + datasource.name + " @ " + last_refresh.toISOString());
+					warnOtherExtensions();
+				});
             }
           });
+
+		  
         });
       });
+	  	  
+
+    }
+
+	function checkManualRefreshed(){
+		return false;
+	}
+
+	function checkRefresh() {
+		if(!refresh_enabled){
+			return;
+		}
+		
+		let t_now = new Date();
+		if( (t_now - last_refresh)  > (intervalInMin * 1000 * 60 - checkIntervalSecs * 1000) ){
+			last_refresh = new Date();	//Avoid to trigger again the refresh at next checks, at least for one interval
+			doRefresh();
+		} else if (checkManualRefreshed()) {
+			last_refresh = new Date();
+			doRefresh();
+		}
+
     }
 
   /**
    * This function sets up a JavaScript interval based on the time interval selected
    * by the user.  This interval will refresh all selected datasources.
    */
-  function setupRefreshInterval (interval) {
+  function setupRefreshInterval () {
 	  //TODO: Remove log
-	  console.log("setting interval " + interval);
+	console.log("Setting refresh rate (min) = " + intervalInMin);
     if(timer_refresh){
 		clearInterval(timer_refresh);
 	}
-	timer_refresh = setInterval(doRefresh, interval * 60 * 1000);
+	timer_refresh = setInterval(checkRefresh, checkIntervalSecs * 1000);
   }
 
   /**
    * Helper that is called to set state anytime the settings are changed.
    */
   function updateExtensionBasedOnSettings (settings) {
-    if (settings.selectedDatasources) {
-      activeDatasourceIdList = JSON.parse(settings.selectedDatasources);
-    }
+	if (settings.selectedDatasources) {
+		activeDatasourceIdList = JSON.parse(settings.selectedDatasources);
+	}
 	if(settings.requestedInterval){
-	  intervalInMin = settings.requestedInterval;
+		intervalInMin = settings.requestedInterval;
+	}
+	if (settings.selectedParameter) {
+		activeParameterName = settings.selectedParameter;
+	}
+	  
+	if(tableau.extensions.environment.mode.toLowerCase() === "authoring"){
+		if (!(undefined === settings.doRefreshInAuthMode)) {
+			if(settings.doRefreshInAuthMode.toLowerCase()==="true"){
+				console.log("Auth mode enabled");
+				refresh_enabled = true;
+			} else {
+				refresh_enabled = false;
+			}
+		}	  
+	} else {
+		refresh_enabled = true;
 	}
   }
 })();

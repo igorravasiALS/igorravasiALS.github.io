@@ -31,15 +31,30 @@
       <div style="margin-left: 14px" id="datasources">
       </div>
       <h5>Refresh interval in minutes:</h5>
-      <input style="margin-left: 14px" type="number" id="interval" name="quantity" min="1" max="60">
-	  <hr />
 	  <div>
-	  <input style="margin-left: 14px" type="checkbox" id="startup" checked="true" >
-	  <label for="startup" text="Esegui un refresh all'apertura" />
+	  <label for="interval">Interval period</label>
+      <input style="margin-left: 14px" type="number" id="interval" name="quantity" min="1" max="60"/>
 	  </div>
-
+	  <hr />
+	  <h5>Triggera il cambio valore del parametro: </h5>
+      <div style="margin-left: 14px" id="parameters">
+      </div>
       <hr />
-      <button id="closeButton">Start Auto Refresh</button>
+	  <div>
+	  <h5>Opzioni:</h5>
+	  <p>
+		<input style="margin-left: 14px" type="checkbox" id="startup" name ="startup" checked="true"/>
+		<label for="startup">Esegui (anche) un refresh all'apertura</label>
+	  </p>
+	  <p>
+		<input style="margin-left: 14px" type="checkbox" id="authoring" name ="authoring" checked="true"/>
+		<label for="authoring">Esegui (anche) in modalità authoring</label>
+	  </p>
+	  </div>
+	  <hr />
+      <button type="button" id="closeButton">Save Settings</button>
+	  <br />
+	  <hr />
     </div>
   </body>
 </html>
