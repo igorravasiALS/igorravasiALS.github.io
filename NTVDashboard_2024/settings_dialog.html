@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Settings Sample</title>
+
+    <!-- jQuery -->
+    <script src="jquery-3.2.1.min.js"></script>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="bootstrap.min.css" >
+    <script src="bootstrap.min.js" ></script>
+
+    <!-- Extensions Library (this will be hosted on a CDN eventually) -->
+    <script src="tableau.extensions.1.latest.min.js"></script>
+
+    <!-- Our extension's code -->
+    <script src="./settings_dialog.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <h4>Impostazioni</h4>
+      <p>
+        Questa estensione disegna un radar basandosi sui dati di un grafico a barre di formato convenuto.
+      </p>
+      <hr />
+	  <h5>Seleziona il nome del worksheet del grafico a barre: </h5>
+	  <div style="margin-left: 14px" id="worksheets">
+	  </div>
+      <h5>Seleziona il nome del datasource di cui fare il refresh automatico: </h5>
+      <div style="margin-left: 14px" id="datasources">
+      </div>
+      <h5>Intervallo (minuti) di refresh automatico:</h5>
+	  <p style="margin-left: 14px">Impostare 0 o un numero negativo per disabilitare la funzione di refresh automatico. Se inserisci più estensioni nella dashboard disabilita il refresh automatico in tutte a parte una, per evitare continui refresh concorrenti.</p>
+      <input style="margin-left: 14px" type="number" id="interval" name="quantity" min="-1" max="60">
+
+	  <hr />
+	  <label style="margin-left: 14px; width:90%" for="jcfg">Override Configurazione</label>
+	  <textarea style="margin-left: 14px; width:90%" rows="12" id="jcfg" name="jcfg">
+	  </textarea>
+	  <hr />
+	  <label style="margin-left: 14px; width:90%" for="jdefcfg">(Default)</label>
+	  <textarea disabled style="margin-left: 14px; width:90%" rows="12" id="jdefcfg" name="jdefcfg">
+	  </textarea>
+      <hr />
+      <button id="closeButton">Applica e chiudi</button>
+    </div>
+  </body>
+</html>
