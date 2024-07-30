@@ -14,7 +14,7 @@
 		  // funzione per estrarre un array contenente le dimensioni per i poligoni
 		  function getLegend(data){
 			var legend = [];
-			for(i in data) legend[i]=data[i][2].formattedValue;
+			for(i in data) legend[i]=data[i][3].formattedValue;
 	
 					function onlyUnique(value, index, self) { 
 						return self.indexOf(value) === index;
