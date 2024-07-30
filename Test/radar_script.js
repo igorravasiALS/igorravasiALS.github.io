@@ -12,7 +12,7 @@
 		  var i, LegendOptions, colordata, row, color, d;
 		  
 		  // funzione per estrarre un array contenente le dimensioni per i poligoni
-		  function getLegend(data) => {
+		  function getLegend(data){
 			var legend = [];
 			for(i in data) legend[i]=data[i][3].formattedValue;
 	
@@ -21,7 +21,7 @@
 					}
 
 			return legend.filter( onlyUnique )
-			}
+			}.bind(this)
 
 		  // funzione per estrarre un array contente lo stato di aggiornamento del dato per ogni treno			
 		  function getColor(data){
