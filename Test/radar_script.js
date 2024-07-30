@@ -8,7 +8,7 @@
 		   // prendo i workbook che servono, nell'ordine: grafico a barre AGV, grafico a barre EVO, filtro servizio
 		  var worksheet = tableau.extensions.dashboardContent.dashboard.worksheets[0];
 		  var worksheet1 = tableau.extensions.dashboardContent.dashboard.worksheets[1];
-		  var worksheet2 = tableau.extensions.dashboardContent.dashboard.worksheets[2];
+		  var worksheet2 = tableau.extensions.dashboardContent.dashboard.worksheets[3];
 		  var i, LegendOptions, colordata, row, color, d;
 		  
 		  // funzione per estrarre un array contenente le dimensioni per i poligoni
