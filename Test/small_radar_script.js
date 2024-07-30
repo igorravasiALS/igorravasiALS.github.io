@@ -23,7 +23,7 @@
 					}
 
 			return legend.filter( onlyUnique )
-			}
+			}.bind(this)
 		  
 		  // funzione per estrarre un array contente lo stato di aggiornamento del dato per ogni treno
 		  function getColor(data){
