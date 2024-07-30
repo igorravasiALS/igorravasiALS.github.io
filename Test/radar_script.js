@@ -27,10 +27,10 @@
 		  function getColor(data){
 			row = [];
 			for(i in data){
-				if(data[i][2].formattedValue=="Disp. corrente"){
+				if(data[i][3].formattedValue=="Disp. corrente"){
 					row.push({
-					axis: data[i][3].value,
-					value: data[i][0].value
+					axis: data[i][0].value,
+					value: data[i][4].value
 					})
 				}
 			}
@@ -72,7 +72,7 @@
 						test = parseFloat(nicedata[i][c][6].value)
 						}
 				row.push({
-					axis: nicedata[i][c][3].value,
+					axis: nicedata[i][c][0].value,
 					value: test
 				})
         
